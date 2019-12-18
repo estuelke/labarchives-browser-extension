@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "LabArchives Entry List",
+    "version": "0.1.0",
+    "description": "Creates a list of entries on a LabArchives page",
+    "permissions": [
+        "https://mynotebook.labarchives.com/*", "activeTab"
+    ],
+    "icons": {
+        "16": "src/images/533469293.jpg",
+        "32": "src/images/533469293.jpg",
+        "48": "src/images/533469293.jpg",
+        "128": "src/images/533469293.jpg"
+    },
+    "content_scripts": [{
+        "css": [
+            "src/css/bootstrap.min.css",
+            "src/css/fabric.min.css"
+        ],
+        "js": [
+            "src/js/jquery-3.4.1.min.js", 
+            "src/js/bootstrap.min.js", 
+            "src/js/cure-center-content.js"
+        ],
+        "run_at": "document_idle",
+        "matches": [
+            "https://mynotebook.labarchives.com/*",
+            "https://mynotebook.labarchives.com/?"
+        ]
+    }]
+}
