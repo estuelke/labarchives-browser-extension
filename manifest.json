@@ -22,7 +22,7 @@
             "src/js/bootstrap.min.js", 
             "src/js/cure-center-content.js"
         ],
-        "run_at": "document_idle",
+        "run_at": "document_end",
         "matches": [
             "https://mynotebook.labarchives.com/*",
             "https://mynotebook.labarchives.com/?"
