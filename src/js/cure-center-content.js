@@ -238,14 +238,16 @@ function observeChangeInEntryDisplay() {
         const previousEntries = $("#content").data("num-entries");
         const currentEntries = $(".ep_wrapper").length;
 
-        console.log("before", previousEntries, currentEntries);
-        debugger;
+        // console.log("before", previousEntries, currentEntries);
+        // debugger;
         if (previousEntries !== currentEntries) {
           updatePage();
           $("#content").data("num-entries", currentEntries);
         }
 
         console.log("after", previousEntries, currentEntries);
+      } else if (mutation.type === "attributes") {
+        // console.log(mutation);
       }
     });
   });
@@ -257,26 +259,31 @@ function observeChangeInEntryDisplay() {
   });
 }
 
+function observeEntryDisplayNodeAddition() {
+  const content = $("#content")[0];
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      const addedNodes = mutation.addedNodes;
+      addedNodes.forEach(node => {
+        if ($(node).attr("id") === "entry_display") {
+          updatePage();
+        }
+      });
+    });
+  });
+
+  observer.observe(content, { childList: true });
+}
+
 function defer(fn, condition) {
   if (condition()) {
-    console.log("loaded");
     fn();
   } else {
-    console.log("not loaded");
-    console.log(condition);
     setTimeout(() => defer(fn, condition), 300);
   }
 }
 
 $(document).ready(function() {
-  defer(updatePage, () => $('#entry_display').length !== 0);
-
-  $(document).on("click", ".la-treenode", () => {
-    setTimeout(() => updatePage(), 2000);
-    // defer(updatePage, () => $("#entry_display").length !== 0);
-  });
-
-  $("#search-submit").on("click", () => {
-    setTimeout(() => updatePage(), 2000);
-  });
+  defer(observeEntryDisplayNodeAddition, () => $("#content").length !== 0);
 });
