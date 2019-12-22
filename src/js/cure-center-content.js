@@ -63,7 +63,7 @@ function addEntryList() {
 
 function setEntryColumnCSS() {
   $('#entry-button-column').css({
-    height: '200px', // $('#entry_display').outerHeight(),
+    height: '200px',
     width: '32px',
     'overflow-y': 'auto'
   });
@@ -72,7 +72,8 @@ function setEntryColumnCSS() {
     height: $('#entry_display').outerHeight(),
     width: '20%',
     left: getEntryListColumnLeftOffset(),
-    'overflow-y': 'auto'
+    'overflow-y': 'auto',
+    transition: 'left .3s ease-in-out'
   });
 
   $('#entry-column').css({
@@ -80,7 +81,7 @@ function setEntryColumnCSS() {
     width: getEntryColumnWidth(),
     'overflow-y': 'auto',
     right: 0,
-    transition: 'all .5s linear'
+    transition: 'width .3s ease-in-out'
   });
 }
 
@@ -94,7 +95,7 @@ function getEntryColumnWidth() {
 
 function getEntryListColumnLeftOffset() {
   return (
-    $('.la-drawer').outerWidth() +
+    ($('.la-drawer--hidden').length === 0 ? $('.la-drawer').outerWidth() : 0) +
     $('#entry-button-column').outerWidth() +
     parseInt($('#content').css('padding-left'), 10)
   );
@@ -121,6 +122,7 @@ function createListElement(entry, entryId) {
   let icon;
   let innerText;
 
+  // File attachment entry
   if (
     entry.hasClass('ep_data') &&
     $(`#${entryId} .la_attach_caption`).length !== 0
@@ -128,15 +130,18 @@ function createListElement(entry, entryId) {
     const fileInfo = getFileInfo(entry.find('.la_attach_caption').text());
     icon = getListIcon(fileInfo.extension);
     innerText = `<div>${fileInfo.name}</div><div>${fileInfo.description}</div>`;
+    // Widget entry
   } else if (
     entry.hasClass('ep_data') &&
     $(`#${entryId} iframe`).length !== 0
   ) {
     icon = getListIcon('widget');
     innerText = getInnerText(entry, 'Widget');
+    // Rich Text entry
   } else if (entry.hasClass('ep_rich_text')) {
     icon = getListIcon('rich_text');
     innerText = getInnerText(entry, 'Rich Text Entry');
+    // Other type of entry
   } else {
     icon = getListIcon('default');
     innerText = getInnerText(entry, 'Other');
@@ -220,12 +225,12 @@ function observeEntryDisplayResize() {
   const observer = new ResizeObserver(entries => {
     entries.forEach(entry => {
       const newHeight = $('#entry_display').innerHeight();
-      setTimeout(
-        () => $('#entry-column').outerWidth(getEntryColumnWidth()),
-        300
-      );
-      setTimeout(() => $('#entry-column').outerHeight(newHeight), 300);
-      setTimeout(() => $('#entry-list-column').outerHeight(newHeight), 300);
+
+      $('#entry-column').outerWidth(getEntryColumnWidth());
+      $('#entry-column').outerHeight(newHeight);
+
+      $('#entry-list-column').css({ left: getEntryListColumnLeftOffset() });
+      $('#entry-list-column').outerHeight(newHeight);
     });
   });
 
@@ -240,15 +245,11 @@ function observeChangeInEntryDisplay() {
       if (mutation.type === 'childList') {
         const previousEntries = $('#content').data('num-entries');
         const currentEntries = $('.ep_wrapper').length;
-
-        // console.log("before", previousEntries, currentEntries);
         // debugger;
         if (previousEntries !== currentEntries) {
           updatePage();
           $('#content').data('num-entries', currentEntries);
         }
-
-        console.log('after', previousEntries, currentEntries);
       } else if (mutation.type === 'attributes') {
         // console.log(mutation);
       }
@@ -262,15 +263,23 @@ function observeChangeInEntryDisplay() {
   });
 }
 
-function observeEntryDisplayNodeAddition() {
+function observeEntryDisplayNodeChange() {
   const content = $('#content')[0];
 
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       const addedNodes = mutation.addedNodes;
+      const removedNodes = mutation.removedNodes;
+
       addedNodes.forEach(node => {
         if ($(node).attr('id') === 'entry_display') {
           updatePage();
+        }
+      });
+
+      removedNodes.forEach(node => {
+        if ($(node).attr('id') === 'entry_display') {
+          console.log(node);
         }
       });
     });
@@ -288,5 +297,5 @@ function defer(fn, condition) {
 }
 
 $(document).ready(function() {
-  defer(observeEntryDisplayNodeAddition, () => $('#content').length !== 0);
+  defer(observeEntryDisplayNodeChange, () => $('#content').length !== 0);
 });
