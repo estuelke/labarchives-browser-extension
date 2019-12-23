@@ -1,67 +1,70 @@
 function updatePage() {
   if ($('.ep_wrapper').length !== 0) {
-    addEntryList();
+    if ($('#entry_display_container').length === 0) {
+      addEntryDisplayWrapper();
+      addEntriesToList();
+      $('#entry-list-toggle').on('click', handleMenuToggle);
+    }
+
+    defer(
+      () => observeEntryNodeDeletion(handleEntryNodeDeletion),
+      () => $('#entry-column').length !== 0
+    );
     observeEntryDisplayResize();
-    observeChangeInEntryDisplay();
   }
 }
 
-function setToggleEvent() {
-  $('#entry-list-toggle').on('click', function() {
-    $(this)
-      .children('i')
-      .toggleClass('ms-Icon--ChevronLeftSmall');
-    $(this)
-      .children('i')
-      .toggleClass('ms-Icon--ChevronRightSmall');
+function handleMenuToggle() {
+  $(this)
+    .children('i')
+    .toggleClass('ms-Icon--ChevronLeftSmall');
+  $(this)
+    .children('i')
+    .toggleClass('ms-Icon--ChevronRightSmall');
 
-    $('#entry-list-column').css('visibility') === 'hidden'
-      ? $('#entry-list-column').css('visibility', 'visible')
-      : $('#entry-list-column').css('visibility', 'hidden');
+  $('#entry-list-column').css('visibility') === 'hidden'
+    ? $('#entry-list-column').css('visibility', 'visible')
+    : $('#entry-list-column').css('visibility', 'hidden');
 
-    $('#entry-list-column').width() === 0
-      ? $('#entry-list-column').css({ width: '20%' })
-      : $('#entry-list-column').width(0);
+  $('#entry-list-column').width() === 0
+    ? $('#entry-list-column').css({ width: '20%' })
+    : $('#entry-list-column').width(0);
 
-    $('#entry-column').css({ width: getEntryColumnWidth() });
-  });
+  $('#entry-column').css({ width: getEntryColumnWidth() });
 }
 
-function addEntryList() {
-  if ($('#entry_display_container').length === 0) {
-    // Entries from LabArchives
-    $('#entry_display').wrapInner(
-      `<div id="entry_display_container" class="container-fluid">
+function addEntryDisplayWrapper() {
+  // Entries from LabArchives
+  $('#entry_display').wrapInner(
+    `<div id="entry_display_container" class="container-fluid">
                 <div class="row position-relative">
                     <div class="col-auto position-fixed mx-0" id="entry-column"></div>
                 </div>
             </div>`
-    );
+  );
 
-    // Entry navigation list
-    $('#entry_display_container .row').prepend(
-      `<div class="col-auto position-fixed border-right d-flex pl-1" id="entry-list-column">
+  // Entry navigation list
+  $('#entry_display_container .row').prepend(
+    `<div class="col-auto position-fixed border-right d-flex pl-1" id="entry-list-column">
                 <ul class="list-group mb-2 flex-fill" id="custom_entry_list"></ul>
             </div>`
-    );
+  );
 
-    // Entry navigaton list toggle button
-    $('#entry_display_container .row').prepend(
-      `<div class="col-auto position-fixed px-1" id="entry-button-column">
+  // Entry navigaton list toggle button
+  $('#entry_display_container .row').prepend(
+    `<div class="col-auto position-fixed px-1" id="entry-button-column">
                 <div class="mt-3" style="font-size: 16px">
                     <button type="button" class="btn btn-sm btn-outline-dark px-1" id="entry-list-toggle">
                         <i class="ms-Icon ms-Icon--ChevronLeftSmall" aria-hidden="true"></i>
                     </button>    
                 </div>
             </div>`
-    );
-    setToggleEvent();
-    setEntryColumnCSS();
-    addEntriesToList();
-  }
+  );
+
+  setEntryDisplayWrapperCSS();
 }
 
-function setEntryColumnCSS() {
+function setEntryDisplayWrapperCSS() {
   $('#entry-button-column').css({
     height: '200px',
     width: '32px',
@@ -106,16 +109,35 @@ function addEntriesToList() {
   $('#content').data('num-entries', entryWrappers.length);
 
   entryWrappers.each(function() {
-    const wrapperId = $(this).attr('id');
-    const id = wrapperId.split('_')[1];
-    const entryId = `ept_${id}`;
-    const entry = $(`#${entryId}`);
-    const listElement = createListElement(entry, entryId);
+    const entryData = getEntryData($(this));
+    const listElement = createListElement(entryData.entry, entryData.entryId);
 
     $('#custom_entry_list').append(
-      `<a href="#${wrapperId}" class="list-group-item list-group-item-action">${listElement}</a>`
+      `<a 
+        href="#${entryData.wrapperId}" 
+        id="${entryData.menuId}" 
+        class="list-group-item list-group-item-action">${listElement}
+      </a>`
     );
   });
+}
+
+function getEntryData(entryWrapper) {
+  return {
+    wrapperId: entryWrapper.attr('id'),
+    get id() {
+      return this.wrapperId.split('_')[1];
+    },
+    get entryId() {
+      return `ept_${this.id}`;
+    },
+    get entry() {
+      return $(`#${this.entryId}`);
+    },
+    get menuId() {
+      return `eml_${this.id}`;
+    }
+  };
 }
 
 function createListElement(entry, entryId) {
@@ -237,55 +259,45 @@ function observeEntryDisplayResize() {
   observer.observe(entryDisplay);
 }
 
-function observeChangeInEntryDisplay() {
-  const content = $('#entry_display')[0];
-
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      if (mutation.type === 'childList') {
-        const previousEntries = $('#content').data('num-entries');
-        const currentEntries = $('.ep_wrapper').length;
-        // debugger;
-        if (previousEntries !== currentEntries) {
-          updatePage();
-          $('#content').data('num-entries', currentEntries);
-        }
-      } else if (mutation.type === 'attributes') {
-        // console.log(mutation);
-      }
-    });
-  });
-
-  observer.observe(content, {
-    attributes: true,
-    childList: true,
-    subtree: true
-  });
-}
-
-function observeEntryDisplayNodeChange() {
+function observeEntryDisplayNodeAddition() {
   const content = $('#content')[0];
 
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       const addedNodes = mutation.addedNodes;
-      const removedNodes = mutation.removedNodes;
 
       addedNodes.forEach(node => {
         if ($(node).attr('id') === 'entry_display') {
           updatePage();
         }
       });
+    });
+  });
+
+  observer.observe(content, { childList: true });
+}
+
+function observeEntryNodeDeletion(handleDeletion) {
+  const content = $('#entry-column')[0];
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      const removedNodes = mutation.removedNodes;
 
       removedNodes.forEach(node => {
-        if ($(node).attr('id') === 'entry_display') {
-          console.log(node);
-        }
+        handleDeletion(node);
       });
     });
   });
 
   observer.observe(content, { childList: true });
+}
+
+function handleEntryNodeDeletion(node) {
+  if ($(node).hasClass('ep_wrapper')) {
+    const entryData = getEntryData($(node));
+    $(`#${entryData.menuId}`).remove();
+  }
 }
 
 function defer(fn, condition) {
@@ -297,5 +309,5 @@ function defer(fn, condition) {
 }
 
 $(document).ready(function() {
-  defer(observeEntryDisplayNodeChange, () => $('#content').length !== 0);
+  defer(observeEntryDisplayNodeAddition, () => $('#content').length !== 0);
 });
