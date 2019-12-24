@@ -1,15 +1,13 @@
 function updatePage() {
-  if ($('.ep_wrapper').length !== 0) {
-    if ($('#entry_display_container').length === 0) {
-      addEntryDisplayWrapper();
-      addEntriesToList();
-      $('#entry-list-toggle').on('click', handleMenuToggle);
-    }
+  if (
+    $('[id^=epw_]').length !== 0 &&
+    $('#entry_display_container').length === 0
+  ) {
+    addEntryDisplayWrapper();
+    addEntriesToList();
+    $('#entry-list-toggle').on('click', handleMenuToggle);
 
-    defer(
-      () => observeEntryNodeDeletion(handleEntryNodeDeletion),
-      () => $('#entry-column').length !== 0
-    );
+    defer(observeEntryNodeUpdate, () => $('#entry-column').length !== 0);
     observeEntryDisplayResize();
   }
 }
@@ -105,8 +103,7 @@ function getEntryListColumnLeftOffset() {
 }
 
 function addEntriesToList() {
-  const entryWrappers = $('.ep_wrapper');
-  $('#content').data('num-entries', entryWrappers.length);
+  const entryWrappers = $('[id^=epw_]');
 
   entryWrappers.each(function() {
     const entryData = getEntryData($(this));
@@ -277,27 +274,17 @@ function observeEntryDisplayNodeAddition() {
   observer.observe(content, { childList: true });
 }
 
-function observeEntryNodeDeletion(handleDeletion) {
+function observeEntryNodeUpdate() {
   const content = $('#entry-column')[0];
 
   const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      const removedNodes = mutation.removedNodes;
-
-      removedNodes.forEach(node => {
-        handleDeletion(node);
-      });
+    mutations.forEach(_ => {
+      $('#custom_entry_list a').remove();
+      addEntriesToList();
     });
   });
 
   observer.observe(content, { childList: true });
-}
-
-function handleEntryNodeDeletion(node) {
-  if ($(node).hasClass('ep_wrapper')) {
-    const entryData = getEntryData($(node));
-    $(`#${entryData.menuId}`).remove();
-  }
 }
 
 function defer(fn, condition) {
