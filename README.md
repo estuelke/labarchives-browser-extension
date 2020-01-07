@@ -1,6 +1,6 @@
 # LabArchives Entry List
 
-![Menu Demo](src/images/demo.gif)
+![Menu Demo](demo.gif)
 
 This extension adds a navigation menu on the left-hand side of an entry page in a notebook on LabArchives.com.  
 
