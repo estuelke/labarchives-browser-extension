@@ -1,16 +1,16 @@
 {
     "manifest_version": 2,
     "name": "LabArchives Entry List",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Creates a list of entries on a LabArchives page",
     "permissions": [
         "https://mynotebook.labarchives.com/*", "activeTab"
     ],
     "icons": {
-        "16": "src/images/533469293.jpg",
-        "32": "src/images/533469293.jpg",
-        "48": "src/images/533469293.jpg",
-        "128": "src/images/533469293.jpg"
+        "16": "src/images/note16.png",
+        "32": "src/images/note32.png",
+        "48": "src/images/note48.png",
+        "128": "src/images/note128.png"
     },
     "content_scripts": [{
         "css": [
@@ -26,6 +26,7 @@
         "matches": [
             "https://mynotebook.labarchives.com/*",
             "https://mynotebook.labarchives.com/?"
-        ]
+        ],
+        "exclude_matches" : ["https://mynotebook.labarchives.com/login"]
     }]
 }
