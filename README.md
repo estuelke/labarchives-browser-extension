@@ -10,8 +10,6 @@ The menu is also collapsible.
 
 This extension works in both Chrome and Firefox.
 
-*Disclaimer: This extension is not developed by or affiliated with LabArchives.*
-
 ## Versions
 
 0.2.0
@@ -24,3 +22,12 @@ This extension works in both Chrome and Firefox.
 0.1.0
 ***
 Initial Release
+
+## Disclaimer
+This extension is not developed by or affiliated with LabArchives.
+
+## License
+This extension is owned by the UNC HIV Cure Center and is free for personal use only.
+
+## Credit
+The notebook icon used for this extension is based on the [Background vector created by invisible_studio - www.freepik.com](https://www.freepik.com/free-photos-vectors/background).
