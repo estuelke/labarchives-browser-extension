@@ -7,7 +7,7 @@ function updatePage() {
     addEntriesToList();
     $('#entry-list-toggle').on('click', handleMenuToggle);
 
-    defer(observeEntryNodeUpdate, () => $('#entry-column').length !== 0);
+    observeEntryNodeUpdate();
     observeEntryDisplayResize();
   }
 }
@@ -257,44 +257,49 @@ function observeEntryDisplayResize() {
 }
 
 function observeEntryDisplayNodeAddition() {
-  const content = $('#content')[0];
+  const interval = setInterval(func, 300);
 
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      const addedNodes = mutation.addedNodes;
+  function func() {
+    if ($('#content').length !== 0) {
+      const content = $('#content')[0];
 
-      addedNodes.forEach(node => {
-        if ($(node).attr('id') === 'entry_display') {
-          updatePage();
-        }
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          const addedNodes = mutation.addedNodes;
+
+          addedNodes.forEach(node => {
+            if ($(node).attr('id') === 'entry_display') {
+              updatePage();
+            }
+          });
+        });
       });
-    });
-  });
-
-  observer.observe(content, { childList: true });
+      observer.observe(content, { childList: true });
+      clearInterval(interval);
+    }
+  };
 }
 
 function observeEntryNodeUpdate() {
-  const content = $('#entry-column')[0];
+  const interval = setInterval(func, 300);
 
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(_ => {
-      $('#custom_entry_list a').remove();
-      addEntriesToList();
-    });
-  });
+  function func() {
+    if ($('#entry-column').length !== 0) {
+      const content = $('#entry-column')[0];
 
-  observer.observe(content, { childList: true });
-}
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(_ => {
+          $('#custom_entry_list a').remove();
+          addEntriesToList();
+        });
+      });
 
-function defer(fn, condition) {
-  if (condition()) {
-    fn();
-  } else {
-    setTimeout(() => defer(fn, condition), 300);
-  }
+      observer.observe(content, { childList: true });
+      clearInterval(interval);
+    }
+  };
 }
 
 $(document).ready(function() {
-  defer(observeEntryDisplayNodeAddition, () => $('#content').length !== 0);
+  observeEntryDisplayNodeAddition();
 });
