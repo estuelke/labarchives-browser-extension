@@ -4,6 +4,4 @@ src/js/bootstrap.min.js
 src/js/jquery-3.4.1.min.js
 node_modules
 .eslintrc.js
-package.json
-package-lock.json
 notes.md
