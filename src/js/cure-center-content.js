@@ -7,7 +7,7 @@ function updatePage() {
     addEntriesToList();
     $('#entry-list-toggle').on('click', handleMenuToggle);
 
-    observeEntryNodeUpdate();
+    observeEntryNodeUpdate(300);
     observeEntryDisplayResize();
   }
 }
@@ -138,33 +138,7 @@ function getEntryData(entryWrapper) {
 }
 
 function createListElement(entry, entryId) {
-  let icon;
-  let innerText;
-
-  // File attachment entry
-  if (
-    entry.hasClass('ep_data') &&
-    $(`#${entryId} .la_attach_caption`).length !== 0
-  ) {
-    const fileInfo = getFileInfo(entry.find('.la_attach_caption').text());
-    icon = getListIcon(fileInfo.extension);
-    innerText = `<div>${fileInfo.name}</div><div>${fileInfo.description}</div>`;
-    // Widget entry
-  } else if (
-    entry.hasClass('ep_data') &&
-    $(`#${entryId} iframe`).length !== 0
-  ) {
-    icon = getListIcon('widget');
-    innerText = getInnerText(entry, 'Widget');
-    // Rich Text entry
-  } else if (entry.hasClass('ep_rich_text')) {
-    icon = getListIcon('rich_text');
-    innerText = getInnerText(entry, 'Rich Text Entry');
-    // Other type of entry
-  } else {
-    icon = getListIcon('default');
-    innerText = getInnerText(entry, 'Other');
-  }
+  const [icon, innerText] = iconAndTextForEntryType(entry, entryId);
 
   const element = `
         <div class="d-flex">
@@ -173,6 +147,32 @@ function createListElement(entry, entryId) {
         </div>`;
 
   return element;
+}
+
+function iconAndTextForEntryType(entry, entryId) {
+  // File attachment entry
+  if (
+    entry.hasClass('ep_data') &&
+    $(`#${entryId} .la_attach_caption`).length !== 0
+  ) {
+    const fileInfo = getFileInfo(entry.find('.la_attach_caption').text());
+    return [
+      getListIcon(fileInfo.extension),
+      `<div>${fileInfo.name}</div><div>${fileInfo.description}</div>`
+    ];
+    // Widget entry
+  } else if (
+    entry.hasClass('ep_data') &&
+    $(`#${entryId} iframe`).length !== 0
+  ) {
+    return [getListIcon('widget'), getInnerText(entry, 'Widget')];
+    // Rich Text entry
+  } else if (entry.hasClass('ep_rich_text')) {
+    return [getListIcon('rich_text'), getInnerText(entry, 'Rich Text Entry')];
+    // Other type of entry
+  } else {
+    return [getListIcon('default'), getInnerText(entry, 'Other')];
+  }
 }
 
 function getInnerText(entry, defaultText) {
@@ -256,8 +256,8 @@ function observeEntryDisplayResize() {
   observer.observe(entryDisplay);
 }
 
-function observeEntryDisplayNodeAddition() {
-  const interval = setInterval(func, 300);
+function observeEntryDisplayNodeAddition(timing) {
+  const interval = setInterval(func, timing);
 
   function func() {
     if ($('#content').length !== 0) {
@@ -277,11 +277,11 @@ function observeEntryDisplayNodeAddition() {
       observer.observe(content, { childList: true });
       clearInterval(interval);
     }
-  };
+  }
 }
 
-function observeEntryNodeUpdate() {
-  const interval = setInterval(func, 300);
+function observeEntryNodeUpdate(timing) {
+  const interval = setInterval(func, timing);
 
   function func() {
     if ($('#entry-column').length !== 0) {
@@ -297,9 +297,9 @@ function observeEntryNodeUpdate() {
       observer.observe(content, { childList: true });
       clearInterval(interval);
     }
-  };
+  }
 }
 
 $(document).ready(function() {
-  observeEntryDisplayNodeAddition();
+  observeEntryDisplayNodeAddition(300);
 });
