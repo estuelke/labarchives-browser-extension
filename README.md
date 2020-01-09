@@ -1,10 +1,10 @@
-# LabArchives Entry List
+# LabArchives Entry Table of Contents
 
 ![Menu Demo](demo.gif)
 
-This extension adds a navigation menu on the left-hand side of an entry page in a notebook on LabArchives.com.  
+This extension adds a table of contents menu on the left-hand side of an entry page in a notebook on LabArchives.com.  
 
-The entry menu displays a list of all the entries on the page indicating type of file or type of entry.  Clicking on a an item will scroll to that place on the page.
+The menu displays a list of all the entries on the page indicating type of file or type of entry.  It will also display the file description if the user has included it.  Clicking on an item will scroll to that place on the page.
 
 The menu is also collapsible.
 
