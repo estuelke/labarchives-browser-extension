@@ -181,7 +181,7 @@ function getInnerText(entry, defaultText) {
   const treePath = entry.siblings('.div_tree_path');
 
   if (treePath.length !== 0) {
-    const link = $(treePath.children('a')[0]);
+    const link = treePath.children('a').first();
 
     return `${link.text()}<br><span class="text-muted">${defaultText}</span>`;
   } else {
