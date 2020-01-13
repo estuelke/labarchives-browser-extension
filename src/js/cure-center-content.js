@@ -63,6 +63,8 @@ function addEntryDisplayWrapper() {
 }
 
 function setEntryDisplayWrapperCSS() {
+  const entryDisplayOuterHeight = $('#entry_display').outerHeight();
+
   $('#entry-button-column').css({
     height: '200px',
     width: '32px',
@@ -70,7 +72,7 @@ function setEntryDisplayWrapperCSS() {
   });
 
   $('#entry-list-column').css({
-    height: $('#entry_display').outerHeight(),
+    height: entryDisplayOuterHeight,
     width: '20%',
     left: getEntryListColumnLeftOffset(),
     'overflow-y': 'auto',
@@ -78,7 +80,7 @@ function setEntryDisplayWrapperCSS() {
   });
 
   $('#entry-column').css({
-    height: $('#entry_display').outerHeight(),
+    height: entryDisplayOuterHeight,
     width: getEntryColumnWidth(),
     'overflow-y': 'auto',
     right: 0,
@@ -104,19 +106,19 @@ function getEntryListColumnLeftOffset() {
 
 function addEntriesToList() {
   const entryWrappers = $('[id^=epw_]');
+  const elements = [];
 
   entryWrappers.each(function() {
     const entryData = getEntryData($(this));
     const listElement = createListElement(entryData.entry, entryData.entryId);
 
-    $('#custom_entry_list').append(
-      `<a 
+    elements.push(`<a 
         href="#${entryData.wrapperId}" 
         id="${entryData.menuId}" 
         class="list-group-item list-group-item-action">${listElement}
-      </a>`
-    );
+      </a>`);
   });
+  $('#custom_entry_list').append(elements);
 }
 
 function getEntryData(entryWrapper) {
@@ -176,9 +178,9 @@ function iconAndTextForEntryType(entry, entryId) {
 }
 
 function getInnerText(entry, defaultText) {
-  if (entry.parent().children('.div_tree_path').length !== 0) {
-    const parent = entry.parent();
-    const treePath = parent.children('.div_tree_path');
+  const treePath = entry.siblings('.div_tree_path');
+
+  if (treePath.length !== 0) {
     const link = treePath.children('a');
     return `${link.text()}<br><span class="text-muted">${defaultText}</span>`;
   } else {
@@ -189,14 +191,8 @@ function getInnerText(entry, defaultText) {
 function getFileInfo(caption) {
   caption = caption.replace(/[\u200B]/g, '');
   const [fileInfo, description] = caption.split(/\u00A0/g);
-  const filename = fileInfo.substring(0, fileInfo.lastIndexOf('('));
-  const fileSize = fileInfo.substring(
-    fileInfo.lastIndexOf('(') + 1,
-    fileInfo.lastIndexOf(')')
-  );
-  const extension = filename.substring(
-    filename.lastIndexOf('.'),
-    filename.length
+  const [, filename, extension, fileSize] = fileInfo.match(
+    /^\s*((?:.*?)(\.\w+)).*?\((.*?)\)/
   );
 
   return {
