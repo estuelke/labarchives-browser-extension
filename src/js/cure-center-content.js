@@ -41,23 +41,19 @@ function addEntryDisplayWrapper() {
             </div>`
   );
 
-  // Entry navigation list
-  $('#entry_display_container .row').prepend(
-    `<div class="col-auto position-fixed border-right d-flex pl-1" id="entry-list-column">
-                <ul class="list-group mb-2 flex-fill" id="custom_entry_list"></ul>
-            </div>`
-  );
-
   // Entry navigaton list toggle button
-  $('#entry_display_container .row').prepend(
-    `<div class="col-auto position-fixed px-1" id="entry-button-column">
-                <div class="mt-3" style="font-size: 16px">
-                    <button type="button" class="btn btn-sm btn-outline-dark px-1" id="entry-list-toggle">
-                        <i class="ms-Icon ms-Icon--ChevronLeftSmall" aria-hidden="true"></i>
-                    </button>    
-                </div>
-            </div>`
-  );
+  $(`<div class="col-auto position-fixed px-1" id="entry-button-column">
+      <div class="mt-3" style="font-size: 16px" id="entry-list-toggle-container">
+         <button type="button" class="btn btn-sm btn-outline-dark px-1" id="entry-list-toggle">
+            <i class="ms-Icon ms-Icon--ChevronLeftSmall" aria-hidden="true"></i>
+         </button>    
+      </div>
+     </div>`).insertBefore('#entry-column');
+
+  // Entry navigation list
+  $(`<div class="col-auto position-fixed border-right d-flex pl-1" id="entry-list-column">
+      <ul class="list-group mb-2 flex-fill" id="custom_entry_list"></ul>
+    </div>`).insertBefore('#entry-column');
 
   setEntryDisplayWrapperCSS();
 }
@@ -66,9 +62,9 @@ function setEntryDisplayWrapperCSS() {
   const entryDisplayOuterHeight = $('#entry_display').outerHeight();
 
   $('#entry-button-column').css({
-    height: '200px',
+    height: '100%',
     width: '32px',
-    'overflow-y': 'auto'
+    'overflow-y': 'hidden'
   });
 
   $('#entry-list-column').css({
