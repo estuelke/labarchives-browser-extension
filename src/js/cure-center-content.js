@@ -181,7 +181,8 @@ function getInnerText(entry, defaultText) {
   const treePath = entry.siblings('.div_tree_path');
 
   if (treePath.length !== 0) {
-    const link = treePath.children('a');
+    const link = $(treePath.children('a')[0]);
+
     return `${link.text()}<br><span class="text-muted">${defaultText}</span>`;
   } else {
     return defaultText;
@@ -204,36 +205,36 @@ function getFileInfo(caption) {
 }
 
 function getListIcon(type) {
-  function isOfficeIcon(name) {
-    return `<div><div class="ms-BrandIcon--icon16 ms-BrandIcon--${name}" /></div>`;
-  }
-
-  function isGenericIcon(name) {
-    return `<i class="ms-Icon ms-Icon--${name}" aria-hidden="true" style="font-size: 16px"></i>`;
-  }
-
-  const icon = {
-    '.doc': isOfficeIcon('word'),
-    '.docx': isOfficeIcon('word'),
-    '.xlsx': isOfficeIcon('excel'),
-    '.xls': isOfficeIcon('excel'),
-    '.csv': isOfficeIcon('csv'),
-    '.ppt': isOfficeIcon('powerpoint'),
-    '.pptx': isOfficeIcon('powerpoint'),
-    '.jpg': isGenericIcon('Photo2'),
-    '.jpeg': isGenericIcon('Photo2'),
-    '.png': isGenericIcon('Photo2'),
-    '.svg': isGenericIcon('Photo2'),
-    '.pdf': isGenericIcon('PDF'),
-    '.jmp': isGenericIcon('BarChartVerticalFill'),
-    '.pzfx': isGenericIcon('BarChartVerticalFill'),
-    rich_text: isGenericIcon('Articles'),
-    widget: isGenericIcon('CubeShape'),
-    default: isGenericIcon('KnowledgeArticle')
-  };
-
   return icon[type] || icon.default;
 }
+
+function isOfficeIcon(name) {
+  return `<div><div class="ms-BrandIcon--icon16 ms-BrandIcon--${name}" /></div>`;
+}
+
+function isGenericIcon(name) {
+  return `<i class="ms-Icon ms-Icon--${name}" aria-hidden="true" style="font-size: 16px"></i>`;
+}
+
+const icon = {
+  '.doc': isOfficeIcon('word'),
+  '.docx': isOfficeIcon('word'),
+  '.xlsx': isOfficeIcon('excel'),
+  '.xls': isOfficeIcon('excel'),
+  '.csv': isOfficeIcon('csv'),
+  '.ppt': isOfficeIcon('powerpoint'),
+  '.pptx': isOfficeIcon('powerpoint'),
+  '.jpg': isGenericIcon('Photo2'),
+  '.jpeg': isGenericIcon('Photo2'),
+  '.png': isGenericIcon('Photo2'),
+  '.svg': isGenericIcon('Photo2'),
+  '.pdf': isGenericIcon('PDF'),
+  '.jmp': isGenericIcon('BarChartVerticalFill'),
+  '.pzfx': isGenericIcon('BarChartVerticalFill'),
+  rich_text: isGenericIcon('Articles'),
+  widget: isGenericIcon('CubeShape'),
+  default: isGenericIcon('KnowledgeArticle')
+};
 
 function observeEntryDisplayResize() {
   const entryDisplay = $('#entry_display')[0];
