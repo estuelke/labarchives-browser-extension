@@ -1,0 +1,28 @@
+{
+  "name": "labarchives-browser-extension",
+  "version": "0.2.0",
+  "description": "Browser extension to add entry menu in LabArchives",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/*_test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estuelke/labarchives-browser-extension.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/estuelke/labarchives-browser-extension/issues"
+  },
+  "homepage": "https://github.com/estuelke/labarchives-browser-extension#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^6.2.2"
+  }
+}
