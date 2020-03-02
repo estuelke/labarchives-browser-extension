@@ -11,6 +11,9 @@ The menu is also collapsible.
 This extension works in both Chrome and Firefox.
 
 ## Versions
+0.2.1
+***
+- Minor update to fix bug introduced by website update
 
 0.2.0
 ***
