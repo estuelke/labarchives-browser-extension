@@ -5,6 +5,7 @@ function updatePage() {
   ) {
     addEntryDisplayWrapper();
     addEntriesToList();
+    updateHeaderContainerCSS();
     $('#entry-list-toggle').on('click', handleMenuToggle);
 
     observeEntryNodeUpdate(300);
@@ -117,6 +118,22 @@ function addEntriesToList() {
   $('#custom_entry_list').append(elements);
 }
 
+function updateHeaderContainerCSS() {
+  const entryWrappers = $('[id^=epw_]');
+
+  entryWrappers.each(function() {
+    const entryData = getEntryData($(this));
+    const innerDiv = entryData.headerContainerInnerDiv;
+
+    innerDiv.css({
+      display: 'flex',
+      'justify-content': 'flex-end'
+    });
+
+    console.log(innerDiv);
+  });
+}
+
 function getEntryData(entryWrapper) {
   return {
     wrapperId: entryWrapper.attr('id'),
@@ -131,6 +148,9 @@ function getEntryData(entryWrapper) {
     },
     get menuId() {
       return `eml_${this.id}`;
+    },
+    get headerContainerInnerDiv() {
+      return $(`#entry_header_container_${this.id} div:first-child`);
     }
   };
 }
