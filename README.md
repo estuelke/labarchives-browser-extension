@@ -11,6 +11,11 @@ The menu is also collapsible.
 This extension works in both Chrome and Firefox.
 
 ## Versions
+0.2.2
+***
+- Added user name and date to Rich Text and Widget entry items
+- Bug fix to remove large loading icon
+
 0.2.1
 ***
 - Minor update to fix bug introduced by website update

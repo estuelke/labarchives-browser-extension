@@ -107,7 +107,7 @@ function addEntriesToList() {
 
   entryWrappers.each(function() {
     const entryData = getEntryData($(this));
-    const listElement = createListElement(entryData.entry, entryData.entryId);
+    const listElement = createListElement(entryData);
 
     elements.push(`<a 
         href="#${entryData.wrapperId}" 
@@ -124,13 +124,16 @@ function updateHeaderContainerCSS() {
   entryWrappers.each(function() {
     const entryData = getEntryData($(this));
     const innerDiv = entryData.headerContainerInnerDiv;
+    const entryLoader = entryData.entryLoader;
 
     innerDiv.css({
       display: 'flex',
-      'justify-content': 'flex-end'
+      'justify-content': 'space-between'
     });
 
-    console.log(innerDiv);
+    entryLoader.css({
+      display: 'none'
+    });
   });
 }
 
@@ -151,12 +154,21 @@ function getEntryData(entryWrapper) {
     },
     get headerContainerInnerDiv() {
       return $(`#entry_header_container_${this.id} div:first-child`);
+    },
+    get entryLoader() {
+      return $(`#entry_header_container_${this.id} .entry-loader`);
+    },
+    get headerUserAndDate() {
+      const epcElement = $(
+        `#entry_header_container_${this.id} div:first-child #epc_${this.id}`
+      );
+      return epcElement.text();
     }
   };
 }
 
-function createListElement(entry, entryId) {
-  const [icon, innerText] = iconAndTextForEntryType(entry, entryId);
+function createListElement(entryData) {
+  const [icon, innerText] = iconAndTextForEntryType(entryData);
 
   const element = `
         <div class="d-flex">
@@ -167,7 +179,10 @@ function createListElement(entry, entryId) {
   return element;
 }
 
-function iconAndTextForEntryType(entry, entryId) {
+function iconAndTextForEntryType(entryData) {
+  const entry = entryData.entry;
+  const entryId = entryData.entryId;
+
   // File attachment entry
   if (
     entry.hasClass('ep_data') &&
@@ -183,10 +198,16 @@ function iconAndTextForEntryType(entry, entryId) {
     entry.hasClass('ep_data') &&
     $(`#${entryId} iframe`).length !== 0
   ) {
-    return [getListIcon('widget'), getInnerText(entry, 'Widget')];
+    return [
+      getListIcon('widget'),
+      `<div>Widget</div><div>${entryData.headerUserAndDate}</div>`
+    ];
     // Rich Text entry
   } else if (entry.hasClass('ep_rich_text')) {
-    return [getListIcon('rich_text'), getInnerText(entry, 'Rich Text Entry')];
+    return [
+      getListIcon('rich_text'),
+      `<div>Rich Text Entry</div><div>${entryData.headerUserAndDate}</div>`
+    ];
     // Other type of entry
   } else {
     return [getListIcon('default'), getInnerText(entry, 'Other')];

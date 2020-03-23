@@ -1,7 +1,7 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "LabArchives Entry List",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Creates a list of entries on a LabArchives page",
     "permissions": [
         "https://mynotebook.labarchives.com/*", "activeTab"
